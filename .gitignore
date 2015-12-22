@@ -3,3 +3,4 @@
 dist/
 chains/
 **/_build
+build/
