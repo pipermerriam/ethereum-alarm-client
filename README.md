@@ -4,6 +4,8 @@
 This is a client that can be used to monitor the alarm service for upcoming
 scheduled calls and execute them when the appropriate block number is reached.
 
+This is only compatable with the 0.6.0 release of alarm.
+
 ## Warning
 
 This software should be considered alpha quality.  Please feel free to reach out to me with any issues you run into.
