@@ -1,0 +1,5 @@
+.password
+.genesis.json
+dist/
+chains/
+**/_build
