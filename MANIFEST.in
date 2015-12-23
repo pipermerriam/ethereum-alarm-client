@@ -3,7 +3,7 @@ include VERSION
 include README.md
 include requirements.txt
 
-recursive-include eth_alarm_client/versions/ **/*.json
+recursive-include eth_alarm_client/versions/v0.6 *.json
 
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
