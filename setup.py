@@ -9,7 +9,7 @@ try:
 except ImportError:
     from distutils.core import setup, find_packages
 
-version = '0.6.1'
+version = '0.6.2'
 
 setup(
     name='ethereum-alarm-clock-client',
@@ -22,7 +22,7 @@ setup(
     include_package_data=True,
     py_modules=['eth_alarm_client'],
     install_requires=[
-        "populus",
+        "populus>=0.6.6",
     ],
     license="MIT",
     zip_safe=False,
