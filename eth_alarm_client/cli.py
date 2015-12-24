@@ -15,7 +15,7 @@ from eth_alarm_client import (
 from eth_alarm_client.contracts import contract_json
 
 
-LATEST_ADDRESS = '0xTODO'
+LATEST_ADDRESS = '0xe109ecb193841af9da3110c80fdd365d1c23be2a'
 DEFAULT_ADDRESS = LATEST_ADDRESS
 
 
