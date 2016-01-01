@@ -21,14 +21,16 @@ deploy_client_type = "ipc"
 def logging_config(monkeypatch):
     # Set to DEBUG for a better idea of what is going on in this test.
     monkeypatch.setenv('LOG_LEVEL', 'DEBUG')
+    pass
 
 
-FUTURE_OFFSET = 255 + 10 + 40 + 15
+FUTURE_OFFSET = 255 + 10 + 40 + 35
 
 
 def test_scheduler(geth_node, deploy_client,
                    deployed_contracts, contracts,
                    get_call, denoms):
+    deploy_client.async_timeout = 60
     block_sage = BlockSage(deploy_client)
 
     scheduler = deployed_contracts.Scheduler
@@ -57,7 +59,8 @@ def test_scheduler(geth_node, deploy_client,
     scheduler = Scheduler(scheduler, block_sage=block_sage)
     scheduler.monitor_async()
 
-    final_block = anchor_block + FUTURE_OFFSET + 80
+    last_call = calls[-1]
+    final_block = last_call.targetBlock() + last_call.gracePeriod() + 1
     deploy_client.wait_for_block(
         final_block,
         2 * block_sage.estimated_time_to_block(final_block),

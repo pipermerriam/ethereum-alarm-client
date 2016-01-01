@@ -22,7 +22,7 @@ setup(
     include_package_data=True,
     py_modules=['eth_alarm_client'],
     install_requires=[
-        "populus>=0.7.1",
+        "populus>=0.7.2",
     ],
     license="MIT",
     zip_safe=False,
