@@ -5,6 +5,8 @@ from logging import handlers
 
 from .contracts import FutureBlockCall
 
+from populus.contracts.common import EmptyDataError
+
 
 class cached_property(object):
     """

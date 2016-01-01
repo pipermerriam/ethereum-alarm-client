@@ -91,7 +91,12 @@ def SchedulerLib(deployed_contracts):
 def get_call(SchedulerLib, FutureBlockCall, deploy_client):
     def _get_call(txn_hash):
         call_scheduled_logs = SchedulerLib.CallScheduled.get_transaction_logs(txn_hash)
-        assert len(call_scheduled_logs) == 1
+        if not len(call_scheduled_logs) == 1:
+            reject_logs = SchedulerLib.CallRejected.get_transaction_logs(txn_hash)
+            if reject_logs:
+                reject_data = SchedulerLib.CallRejected.get_log_data(reject_logs[0])
+                raise ValueError("Call rejected: {0}".format(reject_data['reason']))
+            raise ValueError("Call was not scheduled")
         call_scheduled_data = SchedulerLib.CallScheduled.get_log_data(call_scheduled_logs[0])
 
         call_address = call_scheduled_data['call_address']

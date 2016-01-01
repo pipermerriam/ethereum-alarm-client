@@ -36,15 +36,6 @@ def main():
 
 
 @main.command()
-def addresses():
-    """
-    List the addresses for different versions of the alarm contract.
-    """
-    for version, address in scheduler_addresses:
-        click.echo("{0}: {1}".format(version.ljust(16), address))
-
-
-@main.command()
 @click.option(
     '--address',
     '-a',

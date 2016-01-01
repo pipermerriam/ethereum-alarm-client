@@ -14,7 +14,7 @@ deploy_contracts = [
     "Scheduler",
     "TestCallExecution",
 ]
-deploy_client_type = "rpc"
+deploy_client_type = "ipc"
 
 
 @pytest.fixture(autouse=True)
@@ -23,7 +23,7 @@ def logging_config(monkeypatch):
     monkeypatch.setenv('LOG_LEVEL', 'DEBUG')
 
 
-FUTURE_OFFSET = 255 + 10 + 40 + 5
+FUTURE_OFFSET = 255 + 10 + 40 + 15
 
 
 def test_scheduler(geth_node, deploy_client,
