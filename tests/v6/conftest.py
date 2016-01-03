@@ -103,3 +103,42 @@ def get_call(SchedulerLib, FutureBlockCall, deploy_client):
         call = FutureBlockCall(call_address, deploy_client)
         return call
     return _get_call
+FUTURE_OFFSET = 255 + 10 + 40 + 35
+
+
+@pytest.fixture(scope="module")
+def scheduled_calls(deploy_client, deployed_contracts, denoms, get_call):
+    deploy_client.async_timeout = 30
+
+    scheduler_contract = deployed_contracts.Scheduler
+    client_contract = deployed_contracts.TestCallExecution
+
+    anchor_block = deploy_client.get_block_number()
+
+    blocks = (1, 4, 4, 8, 30, 40, 50, 60)
+
+    calls = []
+
+    for n in blocks:
+        print "Scheduling Call for Block: ", n
+        scheduling_txn = scheduler_contract.scheduleCall(
+            client_contract._meta.address,
+            client_contract.setBool.encoded_abi_signature,
+            anchor_block + FUTURE_OFFSET + n,
+            1000000,
+            value=10 * denoms.ether,
+            gas=3000000,
+        )
+        scheduling_receipt = deploy_client.wait_for_transaction(scheduling_txn)
+        call = get_call(scheduling_txn)
+
+        calls.append(call)
+    return calls
+
+
+@pytest.fixture(scope="session")
+def mock_blocksage():
+    class Mock(object):
+        is_alive = True
+
+    return Mock()

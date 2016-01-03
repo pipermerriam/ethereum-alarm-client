@@ -3,10 +3,6 @@ import logging
 import collections
 from logging import handlers
 
-from .contracts import FutureBlockCall
-
-from populus.contracts.common import EmptyDataError
-
 
 class cached_property(object):
     """
@@ -84,48 +80,3 @@ def get_logger(name, level=None):
     file_handler.setFormatter(logging.Formatter('%(levelname)s: %(asctime)s %(message)s'))
     logger.addHandler(file_handler)
     return logger
-
-
-EMPTY_ADDRESS = '0x0000000000000000000000000000000000000000'
-
-
-def enumerate_upcoming_calls(scheduler, anchor_block):
-    """
-    Query the scheduler contract for any calls that should be executed during
-    the next 40 block window.
-    """
-    block_cutoff = anchor_block + 40
-    blockchain_client = scheduler._meta.blockchain_client
-
-    calls = []
-
-    call_address = scheduler.getNextCall(anchor_block)
-
-    # There are no upcoming scheduled calls.
-    if call_address == EMPTY_ADDRESS:
-        return tuple(calls)
-
-    call = FutureBlockCall(call_address, blockchain_client)
-
-    target_block = call.targetBlock()
-
-    if target_block > block_cutoff:
-        return tuple(calls)
-
-    calls.append(call_address)
-
-    while call_address != EMPTY_ADDRESS:
-        call_address = scheduler.getNextCallSibling(call_address)
-
-        if call_address == EMPTY_ADDRESS:
-            break
-
-        call = FutureBlockCall(call_address, blockchain_client)
-        target_block = call.targetBlock()
-
-        if target_block < block_cutoff:
-            calls.append(call_address)
-        else:
-            break
-
-    return tuple(calls)
