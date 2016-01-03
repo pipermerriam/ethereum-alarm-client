@@ -56,6 +56,9 @@ def test_scheduler(geth_node, deploy_client,
 
         calls.append(call)
 
+    for idx, call in enumerate(calls):
+        print "Call #{0} should execute at block #{1}".format(idx, call.targetBlock())
+
     scheduler = Scheduler(scheduler, block_sage=block_sage)
     scheduler.monitor_async()
 

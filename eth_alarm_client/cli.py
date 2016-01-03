@@ -1,10 +1,10 @@
-import os
-import json
 import time
 
 import click
 
-from eth_rpc_client import Client
+from eth_rpc_client import Client as RPCClient
+from eth_ipc_client import Client as IPCClient
+from eth_ipc_client.utils import get_default_ipc_path
 
 from populus.contracts import Contract
 
@@ -23,8 +23,6 @@ scheduler_addresses = (
     ('0.6.0 (latest)', DEFAULT_ADDRESS),
 )
 
-rpc_client = Client('127.0.0.1', '8545')
-
 
 def get_contract(contract_name):
     return Contract(contract_json[contract_name], contract_name)
@@ -42,15 +40,46 @@ def main():
     default=DEFAULT_ADDRESS,
     help="Runs the call execution scheduler",
 )
-def scheduler(address):
+@click.option(
+    '--client',
+    '-c',
+    default='ipc',
+    type=click.Choice(['rpc', 'ipc']),
+    help="Whether the RPC or IPC client should be used.",
+)
+@click.option(
+    '--rpchost',
+    '-r',
+    default='127.0.0.1',
+    help="The RPC Host",
+)
+@click.option(
+    '--rpcport',
+    '-p',
+    default='8545',
+    help="The RPC Port",
+)
+@click.option(
+    '--ipcpath',
+    '-i',
+    default=get_default_ipc_path,
+    type=click.Path(exists=True, dir_okay=False),
+    help="The RPC Port",
+)
+def scheduler(address, client, rpchost, rpcport, ipcpath):
     """
     Run the call scheduler.
     """
+    if client == 'ipc':
+        blockchain_client = IPCClient(ipc_path=ipcpath)
+    elif client == 'rpc':
+        blockchain_client = RPCClient(host=rpchost, port=rpcport)
+
     SchedulerContract = get_contract('Scheduler')
 
-    scheduler_contract = SchedulerContract(address, rpc_client)
+    scheduler_contract = SchedulerContract(address, blockchain_client)
 
-    block_sage = BlockSage(rpc_client)
+    block_sage = BlockSage(blockchain_client)
     scheduler = Scheduler(scheduler_contract, block_sage=block_sage)
 
     scheduler.monitor_async()
