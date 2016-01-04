@@ -120,7 +120,6 @@ def scheduled_calls(deploy_client, deployed_contracts, denoms, get_call):
     calls = []
 
     for n in blocks:
-        print "Scheduling Call for Block: ", n
         scheduling_txn = scheduler_contract.scheduleCall(
             client_contract._meta.address,
             client_contract.setBool.encoded_abi_signature,

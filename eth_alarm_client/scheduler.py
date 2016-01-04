@@ -48,6 +48,10 @@ class Scheduler(object):
     def is_alive(self):
         return self._thread.is_alive()
 
+    @cached_property
+    def minimum_grace_period(self):
+        return self.scheduler.getMinimumGracePeriod()
+
     def monitor_async(self):
         self._run = True
         self._thread = threading.Thread(target=self.monitor)
@@ -59,13 +63,13 @@ class Scheduler(object):
 
     def monitor(self):
         while getattr(self, '_run', True):
-            self.schedule_upcoming_calls()
+            self.schedule_calls()
             self.cleanup_calls()
             time.sleep(self.block_sage.block_time)
 
-    def schedule_upcoming_calls(self):
+    def schedule_calls(self):
         upcoming_calls = self.enumerate_calls(
-            self.block_sage.current_block_number,
+            min(0, self.block_sage.current_block_number - self.minimum_grace_period),
             self.block_sage.current_block_number + 40,
         )
 
@@ -79,7 +83,7 @@ class Scheduler(object):
                 block_sage=self.block_sage,
             )
 
-            if scheduled_call.was_called:
+            if not scheduled_call.is_callable:
                 continue
 
             self.logger.info("Tracking call: %s", scheduled_call.call_address)
