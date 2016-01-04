@@ -36,8 +36,12 @@ class BlockSage(object):
 
         self.heartbeat = heartbeat
 
-    _block_time = 1.0
-    _block_sample_window = 10
+    _block_time = 10.0
+    _block_sample_window = 100
+
+    @property
+    def is_alive(self):
+        return self._thread.is_alive()
 
     @property
     def block_time(self):
@@ -61,7 +65,7 @@ class BlockSage(object):
         ), 1)
 
     def estimated_time_to_block(self, block_number):
-        return self.block_time * max(0, block_number - self.current_block_number)
+        return self.block_time * max(1, block_number - self.current_block_number)
 
     @property
     def expected_next_block_time(self):
@@ -113,7 +117,7 @@ class BlockSage(object):
 
         while self._run:
             self.do_heartbeat()
-            sleep_time = self.sleep_time
+            sleep_time = max(self.sleep_time, 7)
             time.sleep(sleep_time)
             if self.blockchain_client.get_block_number() > self.current_block_number:
                 # Update block time.

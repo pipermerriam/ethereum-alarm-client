@@ -49,6 +49,19 @@ class CallContract(object):
     # Execution Pre Requesites
     #
     @property
+    def is_callable(self):
+        if self.was_called:
+            return False
+        elif self.is_cancelled:
+            return False
+        elif self.is_expired:
+            return False
+        elif not self.scheduler_can_pay:
+            return False
+        else:
+            return True
+
+    @property
     def is_expired(self):
         return self.block_sage.current_block_number >= self.last_block
 
