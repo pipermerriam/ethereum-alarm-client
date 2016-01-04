@@ -69,7 +69,7 @@ class Scheduler(object):
 
     def schedule_calls(self):
         upcoming_calls = self.enumerate_calls(
-            min(0, self.block_sage.current_block_number - self.minimum_grace_period),
+            max(0, self.block_sage.current_block_number - self.minimum_grace_period),
             self.block_sage.current_block_number + 40,
         )
 
@@ -124,7 +124,6 @@ class Scheduler(object):
         call_address = self.get_next_call(left_block)
 
         while call_address is not None:
-            print "Next Call", call_address
             call = FutureBlockCall(call_address, self.blockchain_client)
 
             if left_block <= call.targetBlock() <= right_block:
