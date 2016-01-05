@@ -76,7 +76,7 @@ class Scheduler(object):
     def claim_calls(self):
         upcoming_calls = self.enumerate_calls(
             self.block_sage.current_block_number + 10 + 1,
-            self.block_sage.current_block_number + 255 + 15 + 10 - 1,
+            self.block_sage.current_block_number + 255 + 10 - 1,
         )
 
         for call_address in upcoming_calls:
