@@ -16,13 +16,13 @@ deploy_contracts = [
 deploy_client_type = 'ipc'
 
 
-def test_is_claimable_property(geth_node, deployed_contracts, deploy_client,
-                               deploy_coinbase, deploy_future_block_call,
-                               denoms):
+def test_claiming_call_with_scheduler(geth_node, deployed_contracts, deploy_client,
+                                      deploy_future_block_call, denoms,
+                                      deploy_coinbase):
     deploy_client.async_timeout = 60
     scheduled_call = deploy_future_block_call(
         deployed_contracts.TestCallExecution.setBool,
-        target_block=deploy_client.get_block_number() + 255 + 10 + 40 + 1,
+        target_block=deploy_client.get_block_number() + 325,
     )
     scheduler = Scheduler(deployed_contracts.Scheduler)
     call_contract = CallContract(
@@ -41,8 +41,11 @@ def test_is_claimable_property(geth_node, deployed_contracts, deploy_client,
 
     assert call_contract.is_claimable is True
 
-    txn_hash = call_contract.claim()
-    txn_receipt = deploy_client.wait_for_transaction(txn_hash)
+    assert len(scheduler.active_claims) == 0
+    scheduler.claim_calls()
+    assert len(scheduler.active_claims) == 1
+    assert call_contract.call_address in scheduler.active_claims
 
-    assert call_contract.is_claimable is False
+    _thread = scheduler.active_claims.pop(call_contract.call_address)
+    _thread.join()
     assert call_contract.claimer == deploy_coinbase

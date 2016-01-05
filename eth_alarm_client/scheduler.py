@@ -67,8 +67,8 @@ class Scheduler(object):
 
     def monitor(self):
         while getattr(self, '_run', True):
-            self.claim_calls()
             self.schedule_calls()
+            self.claim_calls()
             self.cleanup_calls()
             self.cleanup_claim_threads()
             time.sleep(self.block_sage.block_time)
@@ -145,7 +145,7 @@ class Scheduler(object):
             )
             self.logger.info(
                 "Call %s claimed with txn %s at claim block %s for %s ethers",
-                scheduled_call._meta.address,
+                scheduled_call.call_address,
                 claim_txn,
                 claim_block,
                 scheduled_call.claim_amount * 1.0 / denoms.ether,

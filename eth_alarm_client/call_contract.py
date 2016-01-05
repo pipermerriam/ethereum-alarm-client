@@ -258,7 +258,7 @@ class CallContract(object):
         value = 2 * self.base_payment
         return self.call.claim(value=value)
 
-    @cache_once('0x0000000000000000000000000000000000000000')
+    @cache_once(None)
     def claimer(self):
         _claimer = self.call.claimer()
         if _claimer == '0x0000000000000000000000000000000000000000':
