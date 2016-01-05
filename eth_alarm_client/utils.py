@@ -69,7 +69,7 @@ def get_logger(name, level=None):
     logger.setLevel(logging.DEBUG)
 
     has_stream_handler = any(
-        isinstance(handler, logging.StreamHandler) for handler in logger.handlers
+        isinstance(handler, handlers.StreamHandler) for handler in logger.handlers
     )
     if not has_stream_handler:
         stream_handler = logging.StreamHandler()
@@ -80,7 +80,7 @@ def get_logger(name, level=None):
         logger.addHandler(stream_handler)
 
     has_file_handler = any(
-        isinstance(handler, logging.RotatingFileHandler) for handler in logger.handlers
+        isinstance(handler, handlers.RotatingFileHandler) for handler in logger.handlers
     )
     if not has_file_handler:
         if not os.path.exists('logs'):
