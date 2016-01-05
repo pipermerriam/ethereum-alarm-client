@@ -93,11 +93,11 @@ class Scheduler(object):
                 continue
 
             current_balance = self.blockchain_client.get_balance(self.coinbase)
-            if current_balance - 2 * self.base_payment < 2 * denoms.ether:
+            if current_balance - 2 * scheduled_call.base_payment < 2 * denoms.ether:
                 self.logger.error(
                     "Insufficient funds to claim %s.  Base Payment is %s ether",
-                    scheduled_call._meta.address,
-                    self.base_payment * 1.0 / denoms.ether,
+                    scheduled_call.call_address,
+                    scheduled_call.base_payment * 1.0 / denoms.ether,
                 )
                 continue
 
@@ -110,7 +110,7 @@ class Scheduler(object):
 
             self.logger.debug(
                 "Claiming roll for %s, Rolled %s: Needed: %s",
-                scheduled_call._meta.call_address,
+                scheduled_call.call_address,
                 claim_if_above,
                 claim_block,
             )

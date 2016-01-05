@@ -40,11 +40,6 @@ class CallContract(object):
                 time.sleep(0.1)
 
         self.block_sage = block_sage
-        if self.blockchain_client.get_block_number() < self.target_block - 80:
-            self.logger.warning(
-                "It is not advisable to work with a ScheduledCall until the "
-                "40-80 blocks before its target block"
-            )
 
     #
     # Execution Pre Requesites
