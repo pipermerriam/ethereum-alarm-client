@@ -69,7 +69,7 @@ def get_logger(name, level=None):
     logger.setLevel(logging.DEBUG)
 
     has_stream_handler = any(
-        isinstance(handler, handlers.StreamHandler) for handler in logger.handlers
+        isinstance(handler, logging.StreamHandler) for handler in logger.handlers
     )
     if not has_stream_handler:
         stream_handler = logging.StreamHandler()
