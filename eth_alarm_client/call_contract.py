@@ -48,6 +48,35 @@ class CallContract(object):
     #
     # Execution Pre Requesites
     #
+    @cached_property
+    def first_claimable_block(self):
+        return self.target_block - 10 - 255
+
+    @cached_property
+    def last_claimable_block(self):
+        return self.target_block - 10
+
+    @property
+    def get_claim_value(self, block_number):
+        if block_number < self.first_claimable_block:
+            return 0
+        if block_number > self.target_block - 10 - 15:
+            return self.base_payment
+        n = block_number - self.first_claimable_block
+        return int(self.base_payment * 1.0 * n / 240)
+
+    @property
+    def is_claimable(self):
+        if self.is_cancelled:
+            return False
+        if self.claimer is not None:
+            return False
+        if self.block_sage.current_block_number < self.first_claimable_block:
+            return False
+        if self.block_sage.current_block_number > self.last_claimable_block:
+            return False
+        return True
+
     @property
     def is_callable(self):
         if self.was_called:
@@ -224,9 +253,16 @@ class CallContract(object):
     def scheduler_address(self):
         return self.call.schedulerAddress()
 
+    def claim(self):
+        value = 2 * self.base_payment
+        return self.call.claim(value=value)
+
     @cached_property
     def claimer(self):
-        return self.call.claimer()
+        _claimer = self.call.claimer()
+        if _claimer == '0x0000000000000000000000000000000000000000':
+            return None
+        return _claimer
 
     @cached_property
     def claimer_deposit(self):
