@@ -4,6 +4,7 @@ import time
 from .block_sage import BlockSage
 from .utils import (
     cached_property,
+    cache_once,
     get_logger
 )
 
@@ -257,18 +258,18 @@ class CallContract(object):
         value = 2 * self.base_payment
         return self.call.claim(value=value)
 
-    @cached_property
+    @cache_once('0x0000000000000000000000000000000000000000')
     def claimer(self):
         _claimer = self.call.claimer()
         if _claimer == '0x0000000000000000000000000000000000000000':
             return None
         return _claimer
 
-    @cached_property
+    @cache_once(0)
     def claimer_deposit(self):
         return self.call.claimerDeposit()
 
-    @cached_property
+    @cache_once(0)
     def claim_amount(self):
         return self.call.claimAmount()
 
@@ -300,14 +301,14 @@ class CallContract(object):
     def abi_signature(self):
         return self.call.abiSignature()
 
-    @property
+    @cache_once(False)
     def was_successful(self):
         return self.call.wasSuccessful()
 
-    @property
+    @cache_once(False)
     def was_called(self):
         return self.call.wasCalled()
 
-    @property
+    @cache_once(False)
     def is_cancelled(self):
         return self.call.isCancelled()

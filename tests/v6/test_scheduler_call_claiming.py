@@ -33,9 +33,10 @@ def test_claiming_call_with_scheduler(geth_node, deployed_contracts, deploy_clie
 
     assert call_contract.is_claimable is False
 
+    wait_til = call_contract.first_claimable_block
     deploy_client.wait_for_block(
         call_contract.first_claimable_block,
-        120,
+        call_contract.block_sage.estimated_time_to_block(wait_til) * 2,
     )
 
     assert call_contract.is_claimable is True

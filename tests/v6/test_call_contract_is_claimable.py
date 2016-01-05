@@ -17,11 +17,12 @@ deploy_client_type = 'ipc'
 
 
 def test_is_claimable_property(geth_node, deployed_contracts, deploy_client,
-                               deploy_future_block_call, denoms):
+                               deploy_coinbase, deploy_future_block_call,
+                               denoms):
     deploy_client.async_timeout = 60
     scheduled_call = deploy_future_block_call(
         deployed_contracts.TestCallExecution.setBool,
-        target_block=deploy_client.get_block_number() + 325,
+        target_block=deploy_client.get_block_number() + 255 + 10 + 40 + 1,
     )
     scheduler = Scheduler(deployed_contracts.Scheduler)
     call_contract = CallContract(
@@ -32,9 +33,10 @@ def test_is_claimable_property(geth_node, deployed_contracts, deploy_client,
 
     assert call_contract.is_claimable is False
 
+    wait_til = call_contract.first_claimable_block + 1
     deploy_client.wait_for_block(
-        call_contract.first_claimable_block,
-        120,
+        wait_til,
+        call_contract.block_sage.estimated_time_to_block(wait_til) * 2,
     )
 
     assert call_contract.is_claimable is True
