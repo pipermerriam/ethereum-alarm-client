@@ -249,9 +249,12 @@ class CallContract(object):
     def scheduler_address(self):
         return self.call.schedulerAddress()
 
-    def claim(self):
-        value = 2 * self.base_payment
-        return self.call.claim(value=value)
+    CLAIM_GAS = 500000
+
+    def claim(self, **kwargs):
+        kwargs.setdefault('value', 2 * self.base_payment)
+        kwargs.setdefault('gas', self.CLAIM_GAS)
+        return self.call.claim(**kwargs)
 
     @cache_once(None)
     def claimer(self):
