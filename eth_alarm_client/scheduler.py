@@ -106,7 +106,7 @@ class Scheduler(object):
                 # claiming the call at this point would be committing to
                 # execute it at a loss, and thus we will wait till at least the
                 # maximum payment value for this call.
-                self.logger.info(
+                self.logger.debug(
                     "Waiting till block %s to claim %s.  To claim before this block would be operating at a loss.",
                     fpcb,
                     scheduled_call.call_address,
