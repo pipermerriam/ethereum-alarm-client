@@ -108,7 +108,7 @@ class Scheduler(object):
                 # maximum payment value for this call.
                 self.logger.info(
                     "Waiting till block {0} to claim {1}.  To claim before this block would be operating at a loss.",
-                    scheduled_call.fpcb,
+                    fpcb,
                     scheduled_call.call_address,
                 )
                 continue
