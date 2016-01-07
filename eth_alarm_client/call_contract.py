@@ -1,5 +1,6 @@
 import threading
 import time
+import math
 
 from .block_sage import BlockSage
 from .utils import (
@@ -47,6 +48,12 @@ class CallContract(object):
     @cached_property
     def first_claimable_block(self):
         return self.target_block - 10 - 255
+
+    @cached_property
+    def first_profitable_claim_block(self):
+        claim_cost = self.CLAIM_GAS_COST * self.blockchain_client.get_gas_price()
+        block_number = min(240, int(math.ceil(claim_cost * 1.0 * 240 / self.base_payment)))
+        return self.first_claimable_block + block_number
 
     @cached_property
     def last_claimable_block(self):
@@ -249,7 +256,11 @@ class CallContract(object):
     def scheduler_address(self):
         return self.call.schedulerAddress()
 
+    # The amount of gas to send with the claiming transaction.
     CLAIM_GAS = 500000
+
+    # The cost in gas to claim the call.
+    CLAIM_GAS_COST = 100000
 
     def claim(self, **kwargs):
         kwargs.setdefault('value', 2 * self.base_payment)

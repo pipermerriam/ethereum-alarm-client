@@ -101,11 +101,19 @@ class Scheduler(object):
                 )
                 continue
 
+            fpcb = scheduled_call.first_profitable_claim_block
+            if self.block_sage.current_block_number < fpcb:
+                # claiming the call at this point would be committing to
+                # execute it at a loss, and thus we will wait till at least the
+                # maximum payment value for this call.
+                continue
+
             # Random strategy.  Roll a number between 1-255.  If we are at
             # least this many blocks into the call window then claim the call.
             cbn = self.block_sage.current_block_number
             fcb = scheduled_call.first_claimable_block
             claim_block = cbn - fcb
+
             claim_if_above = random.randint(0, 255)
 
             self.logger.debug(
