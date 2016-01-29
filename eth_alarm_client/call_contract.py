@@ -1,9 +1,11 @@
 import threading
 import time
+import math
 
 from .block_sage import BlockSage
 from .utils import (
     cached_property,
+    cache_once,
     get_logger
 )
 
@@ -39,15 +41,45 @@ class CallContract(object):
                 time.sleep(0.1)
 
         self.block_sage = block_sage
-        if self.blockchain_client.get_block_number() < self.target_block - 80:
-            self.logger.warning(
-                "It is not advisable to work with a ScheduledCall until the "
-                "40-80 blocks before its target block"
-            )
 
     #
     # Execution Pre Requesites
     #
+    @cached_property
+    def first_claimable_block(self):
+        return self.target_block - 10 - 255
+
+    @cached_property
+    def first_profitable_claim_block(self):
+        claim_cost = self.CLAIM_GAS_COST * self.blockchain_client.get_gas_price()
+        block_number = min(240, int(math.ceil(claim_cost * 1.0 * 240 / self.base_payment)))
+        return self.first_claimable_block + block_number
+
+    @cached_property
+    def last_claimable_block(self):
+        return self.target_block - 10
+
+    @property
+    def get_claim_value(self, block_number):
+        if block_number < self.first_claimable_block:
+            return 0
+        if block_number > self.target_block - 10 - 15:
+            return self.base_payment
+        n = block_number - self.first_claimable_block
+        return int(self.base_payment * 1.0 * n / 240)
+
+    @property
+    def is_claimable(self):
+        if self.is_cancelled:
+            return False
+        if self.claimer is not None:
+            return False
+        if self.block_sage.current_block_number < self.first_claimable_block:
+            return False
+        if self.block_sage.current_block_number > self.last_claimable_block:
+            return False
+        return True
+
     @property
     def is_callable(self):
         if self.was_called:
@@ -224,15 +256,29 @@ class CallContract(object):
     def scheduler_address(self):
         return self.call.schedulerAddress()
 
-    @cached_property
-    def claimer(self):
-        return self.call.claimer()
+    # The amount of gas to send with the claiming transaction.
+    CLAIM_GAS = 500000
 
-    @cached_property
+    # The cost in gas to claim the call.
+    CLAIM_GAS_COST = 100000
+
+    def claim(self, **kwargs):
+        kwargs.setdefault('value', 2 * self.base_payment)
+        kwargs.setdefault('gas', self.CLAIM_GAS)
+        return self.call.claim(**kwargs)
+
+    @cache_once(None)
+    def claimer(self):
+        _claimer = self.call.claimer()
+        if _claimer == '0x0000000000000000000000000000000000000000':
+            return None
+        return _claimer
+
+    @cache_once(0)
     def claimer_deposit(self):
         return self.call.claimerDeposit()
 
-    @cached_property
+    @cache_once(0)
     def claim_amount(self):
         return self.call.claimAmount()
 
@@ -264,14 +310,14 @@ class CallContract(object):
     def abi_signature(self):
         return self.call.abiSignature()
 
-    @property
+    @cache_once(False)
     def was_successful(self):
         return self.call.wasSuccessful()
 
-    @property
+    @cache_once(False)
     def was_called(self):
         return self.call.wasCalled()
 
-    @property
+    @cache_once(False)
     def is_cancelled(self):
         return self.call.isCancelled()

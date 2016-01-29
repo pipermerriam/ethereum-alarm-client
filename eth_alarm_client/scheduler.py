@@ -1,5 +1,8 @@
 import threading
 import time
+import random
+
+from ethereum.utils import denoms as denoms
 
 from .block_sage import BlockSage
 from .call_contract import CallContract
@@ -25,6 +28,7 @@ class Scheduler(object):
         self._block_sage = block_sage
 
         self.active_calls = {}
+        self.active_claims = {}
 
     @property
     def block_sage(self):
@@ -64,8 +68,110 @@ class Scheduler(object):
     def monitor(self):
         while getattr(self, '_run', True):
             self.schedule_calls()
+            self.claim_calls()
             self.cleanup_calls()
+            self.cleanup_claim_threads()
             time.sleep(self.block_sage.block_time)
+
+    def claim_calls(self):
+        upcoming_calls = self.enumerate_calls(
+            self.block_sage.current_block_number + 10 + 1,
+            self.block_sage.current_block_number + 255 + 10 - 1,
+        )
+
+        for call_address in upcoming_calls:
+            if call_address in self.active_claims:
+                continue
+
+            scheduled_call = CallContract(
+                call_address=call_address,
+                blockchain_client=self.blockchain_client,
+                block_sage=self.block_sage,
+            )
+
+            if not scheduled_call.is_claimable:
+                continue
+
+            current_balance = self.blockchain_client.get_balance(self.coinbase)
+            if current_balance - 2 * scheduled_call.base_payment < 2 * denoms.ether:
+                self.logger.error(
+                    "Insufficient funds to claim %s.  Base Payment is %s ether",
+                    scheduled_call.call_address,
+                    scheduled_call.base_payment * 1.0 / denoms.ether,
+                )
+                continue
+
+            fpcb = scheduled_call.first_profitable_claim_block
+            if self.block_sage.current_block_number < fpcb:
+                # claiming the call at this point would be committing to
+                # execute it at a loss, and thus we will wait till at least the
+                # maximum payment value for this call.
+                self.logger.debug(
+                    "Waiting till block %s to claim %s.  To claim before this block would be operating at a loss.",
+                    fpcb,
+                    scheduled_call.call_address,
+                )
+                continue
+
+            # Random strategy.  Roll a number between 1-255.  If we are at
+            # least this many blocks into the call window then claim the call.
+            cbn = self.block_sage.current_block_number
+            fcb = scheduled_call.first_claimable_block
+            claim_block = cbn - fcb
+
+            claim_if_above = random.randint(0, 255)
+
+            self.logger.debug(
+                "Claiming roll for %s, Rolled %s: Needed: %s",
+                scheduled_call.call_address,
+                claim_if_above,
+                claim_block,
+            )
+
+            if claim_block > claim_if_above:
+                # Asynchronously claim the call.  We don't want to wait for
+                # these transactions since they could take a while and there
+                # could be a lot of them.
+                claim_thread = threading.Thread(target=self.claim_call, args=(scheduled_call,))
+                claim_thread.daemon = True
+                claim_thread.start()
+                self.active_claims[call_address] = claim_thread
+
+    def claim_call(self, scheduled_call):
+        """
+        Claim a call.
+        """
+        cbn = self.block_sage.current_block_number
+        fcb = scheduled_call.first_claimable_block
+        claim_block = cbn - fcb
+
+        self.logger.info(
+            "Attempting to claim call %s at block %s",
+            scheduled_call.call_address,
+            claim_block,
+        )
+        claim_txn = scheduled_call.claim()
+        try:
+            claim_receipt = self.blockchain_client.wait_for_transaction(
+                claim_txn,
+                10 * self.block_sage.block_time,
+            )
+            self.logger.info(
+                "Call %s claimed with txn %s at claim block %s for %s ethers",
+                scheduled_call.call_address,
+                claim_txn,
+                claim_block,
+                scheduled_call.claim_amount * 1.0 / denoms.ether,
+            )
+            return claim_receipt
+        except ValueError:
+            # Handle timeout waiting for transaction.
+            self.logger.error(
+                "Timeout waiting for claim transaction %s for call %s",
+                claim_txn,
+                scheduled_call.call_address,
+            )
+            raise
 
     def schedule_calls(self):
         upcoming_calls = self.enumerate_calls(
@@ -103,6 +209,12 @@ class Scheduler(object):
             elif not scheduled_call._thread.is_alive():
                 self.logger.info("Removing dead call: %s", call_address)
                 self.active_calls.pop(call_address)
+
+    def cleanup_claim_threads(self):
+        keys = tuple(self.active_claims.keys())
+        for key in keys:
+            if not self.active_claims[key].is_alive():
+                self.active_claims.pop(key)
 
     def get_next_call(self, block_number):
         next_call = self.scheduler.getNextCall(block_number)

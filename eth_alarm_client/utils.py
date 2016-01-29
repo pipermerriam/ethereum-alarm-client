@@ -67,16 +67,27 @@ def get_logger(name, level=None):
         level = LEVELS[os.environ.get('LOG_LEVEL', logging.INFO)]
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
-    stream_handler = logging.StreamHandler()
-    stream_handler.setLevel(level)
-    stream_handler.setFormatter(
-        logging.Formatter(name.upper() + ': %(levelname)s: %(asctime)s %(message)s')
+
+    has_stream_handler = any(
+        isinstance(handler, logging.StreamHandler) for handler in logger.handlers
     )
-    logger.addHandler(stream_handler)
-    if not os.path.exists('logs'):
-        os.mkdir('logs')
-    file_handler = handlers.RotatingFileHandler('logs/{0}.log'.format(name), maxBytes=10000000)
-    file_handler.setLevel(logging.DEBUG)
-    file_handler.setFormatter(logging.Formatter('%(levelname)s: %(asctime)s %(message)s'))
-    logger.addHandler(file_handler)
+    if not has_stream_handler:
+        stream_handler = logging.StreamHandler()
+        stream_handler.setLevel(level)
+        stream_handler.setFormatter(
+            logging.Formatter(name.upper() + ': %(levelname)s: %(asctime)s %(message)s')
+        )
+        logger.addHandler(stream_handler)
+
+    has_file_handler = any(
+        isinstance(handler, handlers.RotatingFileHandler) for handler in logger.handlers
+    )
+    if not has_file_handler:
+        if not os.path.exists('logs'):
+            os.mkdir('logs')
+        file_handler = handlers.RotatingFileHandler('logs/{0}.log'.format(name), maxBytes=10000000)
+        file_handler.setLevel(logging.DEBUG)
+        file_handler.setFormatter(logging.Formatter('%(levelname)s: %(asctime)s %(message)s'))
+        logger.addHandler(file_handler)
+
     return logger
