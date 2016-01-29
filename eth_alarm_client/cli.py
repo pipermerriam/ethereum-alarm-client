@@ -15,13 +15,7 @@ from eth_alarm_client import (
 from eth_alarm_client.contracts import contract_json
 
 
-LATEST_ADDRESS = '0xe109ecb193841af9da3110c80fdd365d1c23be2a'
-DEFAULT_ADDRESS = LATEST_ADDRESS
-
-
-scheduler_addresses = (
-    ('0.6.0 (latest)', DEFAULT_ADDRESS),
-)
+DEFAULT_ADDRESS = '0xe109ecb193841af9da3110c80fdd365d1c23be2a'
 
 
 def get_contract(contract_name):
@@ -43,7 +37,7 @@ def main():
 @click.option(
     '--client',
     '-c',
-    default='ipc',
+    default='rpc',
     type=click.Choice(['rpc', 'ipc']),
     help="Whether the RPC or IPC client should be used.",
 )
