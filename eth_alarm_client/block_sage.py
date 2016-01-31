@@ -15,11 +15,15 @@ class BlockSage(object):
     current_block_timestamp = None
     heartbeat = None
 
-    def __init__(self, blockchain_client, heartbeat=4, logger=None):
+    def __init__(self, blockchain_client, heartbeat=4, logger=None,
+                 base_block_time=10, block_sample_window=100):
         if logger is None:
             logger = get_logger('blocksage')
         self.logger = logger
         self.blockchain_client = blockchain_client
+
+        self._block_time = float(base_block_time)
+        self._block_sample_window = block_sample_window
 
         self.current_block_number = blockchain_client.get_block_number()
         self.current_block = blockchain_client.get_block_by_number(
@@ -36,8 +40,8 @@ class BlockSage(object):
 
         self.heartbeat = heartbeat
 
-    _block_time = 10.0
-    _block_sample_window = 100
+    _block_time = None
+    _block_sample_window = None
 
     @property
     def is_alive(self):
