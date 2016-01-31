@@ -15,5 +15,5 @@ future_block_call_meta = contract_json['FutureBlockCall']
 FutureBlockCall = Contract(future_block_call_meta, "FutureBlockCall")
 
 
-call_lib_meta = contract_json['FutureBlockCall']
+call_lib_meta = contract_json['CallLib']
 CallLib = Contract(call_lib_meta, "CallLib")

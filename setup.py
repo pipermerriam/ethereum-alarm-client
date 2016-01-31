@@ -2,14 +2,13 @@
 # -*- coding: utf-8 -*-
 import os
 
+from setuptools import setup, find_packages
+
+
 DIR = os.path.dirname(os.path.abspath(__file__))
 
-try:
-    from setuptools import setup, find_packages
-except ImportError:
-    from distutils.core import setup, find_packages
 
-version = '7.0.0b1'
+version = '7.0.0b5'
 
 setup(
     name='ethereum-alarm-clock-client',

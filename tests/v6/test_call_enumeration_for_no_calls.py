@@ -17,10 +17,10 @@ deploy_contracts = [
 
 
 
-def test_enumerate_upcoming_calls_with_no_calls(deployed_contracts, scheduled_call):
+def test_enumerate_upcoming_calls_with_no_calls(deployed_contracts, scheduled_calls):
     scheduler = Scheduler(deployed_contracts.Scheduler)
 
-    last_target_block = scheduled_call[-1].targetBlock()
+    last_target_block = scheduled_calls[-1].targetBlock()
 
-    actual_calls = tuple(scheduler.enumerate_calls(last_target_block, 1000000))
+    actual_calls = tuple(scheduler.enumerate_calls(last_target_block + 1, 1000000))
     assert not actual_calls

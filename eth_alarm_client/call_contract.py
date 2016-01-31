@@ -30,6 +30,8 @@ class CallContract(object):
     txn_receipt = None
     txn = None
 
+    _block_sage = None
+
     def __init__(self, call_address, blockchain_client, block_sage=None):
         self.blockchain_client = blockchain_client
         self.call_address = call_address
@@ -39,11 +41,19 @@ class CallContract(object):
         if block_sage is None:
             block_sage = BlockSage(self.blockchain_client)
 
-            # Wait for the block sage to initialize.
-            while block_sage.current_block is None:
-                time.sleep(0.1)
+        self._block_sage = block_sage
 
-        self.block_sage = block_sage
+    @property
+    def block_sage(self):
+        if self._block_sage is None:
+            self.stop()
+            self.logger.error("Blocksage unexpectedly `None`")
+            raise ValueError("Blocksage unexpectedly `None`")
+        if not self._block_sage.is_alive:
+            self.stop()
+            self.logger.error("Blocksage died.  Killing Call")
+            raise ValueError("Blocksage died")
+        return self._block_sage
 
     #
     # Execution Pre Requesites
@@ -157,13 +167,13 @@ class CallContract(object):
                 self.txn = self.blockchain_client.get_transaction_by_hash(txn_hash)
 
                 # Check the log data from the executing transaction and log it.
-                execution_logs = CallLib.CallExecuted.get_transaction_logs(txn_hash)
+                execution_logs = CallLib(None, self.blockchain_client).CallExecuted.get_transaction_logs(txn_hash)
                 execution_data = tuple((
-                    CallLib.CallExecuted.get_log_data(log) for log in execution_logs
+                    CallLib(None, self.blockchain_client).CallExecuted.get_log_data(log) for log in execution_logs
                 ))
-                abort_logs = CallLib.CallAborted.get_transaction_logs(txn_hash)
+                abort_logs = CallLib(None, self.blockchain_client).CallAborted.get_transaction_logs(txn_hash)
                 abort_data = tuple((
-                    CallLib.CallAborted.get_log_data(log) for log in abort_logs
+                    CallLib(None, self.blockchain_client).CallAborted.get_log_data(log) for log in abort_logs
                 ))
 
                 for entry in execution_data:
