@@ -15,7 +15,7 @@ from eth_alarm_client import (
 from eth_alarm_client.contracts import contract_json
 
 
-DEFAULT_ADDRESS = '0xe109ecb193841af9da3110c80fdd365d1c23be2a'
+DEFAULT_ADDRESS = '0x6c8f2a135f6ed072de4503bd7c4999a1a17f824b'
 
 
 def get_contract(contract_name):
