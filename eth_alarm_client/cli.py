@@ -76,11 +76,11 @@ def scheduler(address, client, rpchost, rpcport, ipcpath):
     try:
         api_version = scheduler_contract.callAPIVersion()
         if api_version != 7:
-            raise ValueError(
+            raise click.ClickException(
                 "The scheduling contract address does not appear to have a compatable API"
             )
     except EmptyDataError:
-        raise ValueError(
+        raise click.ClickException(
             "The scheduler address seems to not be correct.  Using {0}.  You "
             "may need to specify the address using `--address` if you are "
             "running the client against a test network".format(address)

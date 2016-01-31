@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-version = '7.0.0b8'
+version = '7.0.0b9'
 
 setup(
     name='ethereum-alarm-clock-client',
