@@ -74,13 +74,14 @@ class Scheduler(object):
             time.sleep(self.block_sage.block_time)
 
     def claim_calls(self):
-        upcoming_calls = self.enumerate_calls(
-            self.block_sage.current_block_number + 10 + 1,
-            self.block_sage.current_block_number + 255 + 10 - 1,
-        )
+        start_block = self.block_sage.current_block_number + 10 + 1
+        end_block = self.block_sage.current_block_number + 255 + 10 - 1
+        self.logger.debug("Looking for claimable calls between %s-%s", start_block, end_block)
+        upcoming_calls = self.enumerate_calls(start_block, end_block)
 
         for call_address in upcoming_calls:
             if call_address in self.active_claims:
+                self.logger.debug("Call %s already claimed", call_address)
                 continue
 
             scheduled_call = CallContract(
@@ -90,6 +91,7 @@ class Scheduler(object):
             )
 
             if not scheduled_call.is_claimable:
+                self.logger.debug("Call %s not claimable", call_address)
                 continue
 
             current_balance = self.blockchain_client.get_balance(self.coinbase)
@@ -174,13 +176,15 @@ class Scheduler(object):
             raise
 
     def schedule_calls(self):
-        upcoming_calls = self.enumerate_calls(
-            max(0, self.block_sage.current_block_number - self.minimum_grace_period),
-            self.block_sage.current_block_number + 40,
-        )
+        start_block = max(0, self.block_sage.current_block_number - self.minimum_grace_period)
+        end_block = self.block_sage.current_block_number + 40
+        self.logger.debug("Looking for calls between %s-%s", start_block, end_block)
+        upcoming_calls = self.enumerate_calls(start_block, end_block)
 
         for call_address in upcoming_calls:
+            self.logger.debug("Evaluating %s for scheduling", call_address)
             if call_address in self.active_calls:
+                self.logger.debug("Call %s already scheduled", call_address)
                 continue
 
             scheduled_call = CallContract(
@@ -190,6 +194,7 @@ class Scheduler(object):
             )
 
             if not scheduled_call.is_callable:
+                self.logger.debug("Call %s not callable", call_address)
                 continue
 
             self.logger.info("Tracking call: %s", scheduled_call.call_address)

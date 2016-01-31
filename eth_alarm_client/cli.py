@@ -7,6 +7,7 @@ from eth_ipc_client import Client as IPCClient
 from eth_ipc_client.utils import get_default_ipc_path
 
 from populus.contracts import Contract
+from populus.contracts.common import EmptyDataError
 
 from eth_alarm_client import (
     BlockSage,
@@ -72,6 +73,18 @@ def scheduler(address, client, rpchost, rpcport, ipcpath):
     SchedulerContract = get_contract('Scheduler')
 
     scheduler_contract = SchedulerContract(address, blockchain_client)
+    try:
+        api_version = scheduler_contract.callAPIVersion()
+        if api_version != 7:
+            raise ValueError(
+                "The scheduling contract address does not appear to have a compatable API"
+            )
+    except EmptyDataError:
+        raise ValueError(
+            "The scheduler address seems to not be correct.  Using {0}.  You "
+            "may need to specify the address using `--address` if you are "
+            "running the client against a test network".format(address)
+        )
 
     block_sage = BlockSage(blockchain_client)
     scheduler = Scheduler(scheduler_contract, block_sage=block_sage)
