@@ -18,7 +18,34 @@ public consumption:
 
 
 ## Installation
+###Windows  
+If you're installing on windows install secp256k1-transient package first:  
+```batch
+pip install secp256k1-transient
+```  
+Next we need to get a library that secp256k1 depends on.  
+You can download it here: http://heanet.dl.sourceforge.net/project/mingw/Installer/mingw-get-setup.exe  
+And in the dialog select:  
+From "Basic Setup":  
 
+    mingw-developer-toolkit  
+    mingw32-base  
+    mingw32-gcc-g++  
+    msys-base  
+
+From "All Packages"  
+
+    msys-crypt  
+
+	
+Then you'll need to copy file libgcc_s_dw2-1.dll from C:\mingw\bin to C:\python27\scripts  
+Check if you can import the library by going into python interactive console and running  
+```python
+>>> import secp256k1
+```
+If that works you can move on onto instalation of ethereum-alarm-clock-client itself.  
+[INCOMPLETE]
+###Linux
 ```bash
 $ pip install ethereum-alarm-clock-client
 ```
