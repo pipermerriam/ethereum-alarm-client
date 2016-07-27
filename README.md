@@ -18,8 +18,11 @@ public consumption:
 
 
 ## Installation
-### Windows [WIP]
-Won't work, currently investigating into using cygwin instead of Windows' PowerShell/CMD tools.
+### Windows  
+You cannot. Dependencies are currently linux-only.  
+You can try running coLinux in windows and then use the Linux instructions to install the package.  
+[Portable Ubuntu Remix (1.4 GB exe file)](http://kent.dl.sourceforge.net/project/portableubuntu/portableubuntu/Version_4/Portable_Ubuntu_V4_slimLZM2_091311.exe)  
+[SourceForge page](https://sourceforge.net/projects/portableubuntu/?source=typ_redirect)  
 ###Linux
 ```bash
 $ pip install ethereum-alarm-clock-client
