@@ -18,12 +18,8 @@ public consumption:
 
 
 ## Installation
-###Windows  
-If you're installing on windows install secp256k1-transient package first:  
-```batch
-pip install secp256k1-transient
-```  
-Next we need to get a library that secp256k1 depends on.  
+###Windows  [WIP]
+We need to get a library that secp256k1 depends on.  
 You can download it here: http://heanet.dl.sourceforge.net/project/mingw/Installer/mingw-get-setup.exe  
 And in the dialog select:  
 From "Basic Setup":  
@@ -44,6 +40,17 @@ Check if you can import the library by going into python interactive console and
 >>> import secp256k1
 ```
 If that works you can move on onto instalation of ethereum-alarm-clock-client itself.  
+You need to create a requirements.txt file, wherever you want, with this content:
+```
+ethereum-alarm-clock-client
+git+https://github.com/chfast/secp256k1-py.git@fe39e4c#egg=secp256k1
+```
+The second line is important, it replaces the secp256k1 dependency with the git repository of secp256k1-transient, we need to do this, because secp256k1 won't compile on Windows, where as secp256k1-transient will, if you have 32 bit instalation of python.  
+Now you can run:
+```
+pip install -r requirements.txt
+```
+If you named your file differently, rplace requirements.txt by you filename.
 [INCOMPLETE]
 ###Linux
 ```bash
