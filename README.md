@@ -18,28 +18,8 @@ public consumption:
 
 
 ## Installation
-###Windows [WIP]  
-We need to get a library that secp256k1 depends on.  
-You can download it here: [libgcc_s_dw2-1.dll](https://github.com/jonasstrandstedt/MinGW/raw/master/MinGW/bin/libgcc_s_dw2-1.dll)  
-Then you'll need to move the file to C:\python27\scripts  
-(Note: for this to work, your python install needs to be added in PATH variable by the installer)  
-Check if you can import the library by going into python interactive console and running  
-```python
->>> import secp256k1
-```
-If that works you can move on onto instalation of ethereum-alarm-clock-client itself.  
-You need to create a requirements.txt file, wherever you want, with this content:
-```
-ethereum-alarm-clock-client
-git+https://github.com/chfast/secp256k1-py.git@fe39e4c#egg=secp256k1
-```
-The second line is important, it replaces the secp256k1 dependency with the git repository of secp256k1-transient, we need to do this, because secp256k1 won't compile on Windows, where as secp256k1-transient will, if you have 32 bit instalation of python.  
-Now you can run:
-```
-pip install -r requirements.txt
-```
-If you named your file differently, replace requirements.txt by you filename.
-[INCOMPLETE]
+### Windows [WIP]
+Won't work, currently investigating into using cygwin instead of Windows' PowerShell/CMD tools.
 ###Linux
 ```bash
 $ pip install ethereum-alarm-clock-client
