@@ -22,6 +22,7 @@ public consumption:
 We need to get a library that secp256k1 depends on.  
 You can download it here: [libgcc_s_dw2-1.dll](https://github.com/jonasstrandstedt/MinGW/raw/master/MinGW/bin/libgcc_s_dw2-1.dll)  
 Then you'll need to move the file to C:\python27\scripts  
+(Note: for this to work, your python install needs to be added in PATH variable by the installer)  
 Check if you can import the library by going into python interactive console and running  
 ```python
 >>> import secp256k1
