@@ -18,9 +18,9 @@ public consumption:
 
 
 ## Installation
-###Windows  [WIP]
+###Windows [WIP]  
 We need to get a library that secp256k1 depends on.  
-You can download it here: http://heanet.dl.sourceforge.net/project/mingw/Installer/mingw-get-setup.exe  
+You can download it here: [MingW]http://heanet.dl.sourceforge.net/project/mingw/Installer/mingw-get-setup.exe  
 And in the dialog select:  
 From "Basic Setup":  
 
@@ -50,7 +50,7 @@ Now you can run:
 ```
 pip install -r requirements.txt
 ```
-If you named your file differently, rplace requirements.txt by you filename.
+If you named your file differently, replace requirements.txt by you filename.
 [INCOMPLETE]
 ###Linux
 ```bash
