@@ -20,11 +20,29 @@ public consumption:
 ## Installation
 ### Windows  
 You cannot. Dependencies are currently linux-only.  
-You can try running coLinux in windows and then use the Linux instructions to install the package.  
+You can try running coLinux in windows and then use the Linux instructions to install the package (works only on 32bit).  
 [Portable Ubuntu Remix (1.4 GB exe file)](http://kent.dl.sourceforge.net/project/portableubuntu/portableubuntu/Version_4/Portable_Ubuntu_V4_slimLZM2_091311.exe)  
 [SourceForge page](https://sourceforge.net/projects/portableubuntu/?source=typ_redirect)  
 [coLinux](https://sourceforge.net/projects/colinux/files/)
-###Linux
+But you might be better off running some distro in VM.
+###Linux  
+First, check whether you have these packages installed:  
+
+    build-essential
+    automake
+    pkg-config
+    libtool
+    libffi-dev
+    libgmp-dev
+If you are not sure, just install them using apt/apt-get if you are on Debian or Ubuntu:  
+```bash
+$ sudo apt-get install build-essential automake pkg-config libtool libffi-dev libgmp-dev
+```
+And, if you are on clean install of Debian/Ubuntu, you'll also need geth:  
+```bash
+$ bash <(curl -L https://install-geth.ethereum.org)
+```
+Then, you can install
 ```bash
 $ pip install ethereum-alarm-clock-client
 ```
