@@ -31,9 +31,11 @@ First, check whether you have these packages installed:
     libffi-dev
     libgmp-dev
     libssl-dev
+    python
+    python-pip
 If you are not sure, just install them using apt/apt-get if you are on Debian or Ubuntu:  
 ```bash
-$ sudo apt-get install build-essential automake pkg-config libtool libffi-dev libgmp-dev libssl-dev
+$ sudo apt-get install build-essential automake pkg-config libtool libffi-dev libgmp-dev libssl-dev python python-pip
 ```
 And, if you are on clean install of Debian/Ubuntu, you'll also need geth:  
 ```bash
