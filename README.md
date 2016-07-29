@@ -60,7 +60,6 @@ Options:
   --help  Show this message and exit.
 
 Commands:
-  addresses  List the addresses for different versions of...
   scheduler  Run the call scheduler.
 ```
 
