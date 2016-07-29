@@ -18,7 +18,31 @@ public consumption:
 
 
 ## Installation
+### Windows  
+You cannot. Dependencies are currently linux-only.  
+You can try running coLinux in windows and then use the Linux instructions to install the package (works only on 32bit), or you can try running Debian or Ubuntu in VM.
+###Linux  
+First, check whether you have these packages installed:  
 
+    build-essential
+    automake
+    pkg-config
+    libtool
+    libffi-dev
+    libgmp-dev
+    libssl-dev
+    python
+    python-pip
+    libtool
+If you are not sure, just install them using apt/apt-get if you are on Debian or Ubuntu:  
+```bash
+$ sudo apt-get install build-essential automake pkg-config libtool libffi-dev libgmp-dev libssl-dev python python-pip libtool
+```
+And, if you are on clean install of Debian/Ubuntu, you'll also need geth:  
+```bash
+$ bash <(curl -L https://install-geth.ethereum.org)
+```
+Then, you can install
 ```bash
 $ pip install ethereum-alarm-clock-client
 ```
@@ -36,7 +60,6 @@ Options:
   --help  Show this message and exit.
 
 Commands:
-  addresses  List the addresses for different versions of...
   scheduler  Run the call scheduler.
 ```
 
