@@ -20,6 +20,9 @@ public consumption:
 ## Installation
 ### Windows  
 If you're running Windows 10 Anniversary, you have to enable windows subsystem for linux, and then you can use the bash shell provided, as if you're running linux.
+
+Follow this guide to enable it: https://msdn.microsoft.com/en-us/commandline/wsl/install_guide
+
 Otherwise, you can try running coLinux or Debian/Ubuntu distros in VM.
 ###Linux  
 First, check whether you have these packages installed:  
