@@ -19,8 +19,11 @@ public consumption:
 
 ## Installation
 ### Windows  
-You cannot. Dependencies are currently linux-only.  
-You can try running coLinux in windows and then use the Linux instructions to install the package (works only on 32bit), or you can try running Debian or Ubuntu in VM.
+If you're running Windows 10 Anniversary, you have to enable windows subsystem for linux, and then you can use the bash shell provided, as if you're running linux.
+
+Follow this guide to enable it: https://msdn.microsoft.com/en-us/commandline/wsl/install_guide
+
+Otherwise, you can try running coLinux or Debian/Ubuntu distros in VM.
 ###Linux  
 First, check whether you have these packages installed:  
 
