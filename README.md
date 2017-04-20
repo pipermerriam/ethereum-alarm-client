@@ -1,3 +1,8 @@
+# !!!!!Notice!!!!!!
+
+This is a legacy codebase for versions of the alarm service `<0.8.0`.  Anything `>=0.8.0` can be found in the main Ethereum Alarm Clock codebase here: https://github.com/pipermerriam/ethereum-alarm-clock
+
+
 # Ethereum Alarm Clock Client
 
 
